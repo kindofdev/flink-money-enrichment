@@ -4,6 +4,8 @@
 This project is an extensive POC of using Apache Flink (DataStream API) to implement a streaming
 data enrichment.
 
+<br />
+ 
 ## Requirements
 
 #### Non-functional
