@@ -1,0 +1,169 @@
+
+//////******  DEMO FLINK ENRICHMENT  ******\\\\\\
+
+
+kafkacat -b localhost:9092 -t user-session-events -P -K:
+kafkacat -b localhost:9092 -t user-events -P -K:
+kafkacat -b localhost:9092 -t wallet-events -P -K:
+
+kafkacat -b localhost:9092 -t money-enriched-events -C
+
+
+
+1 - SESSION_1_USER_1
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"326a14a3-2e2a-4719-9c71-b9a3952eb211","userId":"9f872873-eae5-466e-8e04-5552564481d1","processedAt":"2020-12-16T00:00:00.00+00:00","clientCountryCode":"CA","type":"UserSessionCreatedEvent"}
+
+
+
+2 - CHANGE_ADDRESS_1_USER_1 + CHANGE_BIRTH_USER_1
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385846","userId":"9f872873-eae5-466e-8e04-5552564481d1","processedAt":"2020-12-16T00:01:00.00+00:00","address":"the address","residentCountryCode":"ES","postalCode":"29002","type":"ChangeAddressEvent"}
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385847","userId":"9f872873-eae5-466e-8e04-5552564481d1","processedAt":"2020-12-16T00:02:00.00+00:00","birthYear":"1978","birthCityPlace":"MA","type":"ChangeBirthDateEvent"}
+
+
+
+3 - MONEY_1_A_USER_1 (enrichment full check *)
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385841","userId":"9f872873-eae5-466e-8e04-5552564481d1","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb211","processedAt":"2020-12-16T00:03:00.00+00:00","amount":100,"currency":"EUR","openingBalance":100,"closingBalance":200,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+4 - AGAIN MONEY_1_A_USER_1 (dedup check)
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385841","userId":"9f872873-eae5-466e-8e04-5552564481d1","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb211","processedAt":"2020-12-16T00:03:00.00+00:00","amount":100,"currency":"EUR","openingBalance":100,"closingBalance":200,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+5 - MONEY_2_A_USER_1 (first occurrence check *)
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385842","userId":"9f872873-eae5-466e-8e04-5552564481d1","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb211","processedAt":"2020-12-16T00:04:00.00+00:00","amount":200,"currency":"EUR","openingBalance":200,"closingBalance":300,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+6 - MONEY_3_B_USERr_1 (first occurrence affect is per moneyType *)
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385843","userId":"9f872873-eae5-466e-8e04-5552564481d1","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb211","processedAt":"2020-12-16T00:05:00.00+00:00","amount":200,"currency":"EUR","openingBalance":200,"closingBalance":300,"moneyType":"BBB","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+
+********************************************************************************************************
+ ADVANCE TIME TO 2020-12-16T00:10:00.00+00:00 (after 2020-12-16T00:05:00.00+00:00)
+********************************************************************************************************
+
+USER STREAM
+
+"9f872873-eae5-466e-8e04-5552564481b8":{"id":"99afd170-babe-4e97-9044-e3d0a2385851","userId":"9f872873-eae5-466e-8e04-5552564481b8","processedAt":"2020-12-16T00:10:00.00+00:00","address":"the address","residentCountryCode":"XX","postalCode":"1111","type":"ChangeAddressEvent"}
+
+
+USER SESSION STREAM
+
+"9f872873-eae5-466e-8e04-5552564481b9":{"id":"326a14a3-2e2a-4719-9c71-b9a3952eb291","userId":"9f872873-eae5-466e-8e04-5552564481b9","processedAt":"2020-12-16T00:10:00.00+00:00","clientCountryCode":"XX","type":"UserSessionCreatedEvent"}
+
+
+WALLET STREAM
+
+"9f872873-eae5-466e-8e04-5552564481c2":{"id":"99afd170-babe-4e97-9044-e3d0a2385651","userId":"9f872873-eae5-466e-8e04-5552564481c2","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb299","processedAt":"2020-12-16T00:10:00.00+00:00","amount":100,"currency":"EUR","openingBalance":100,"closingBalance":200,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+********************************************************************************************************
+
+
+
+
+!!!------------------> CHECK  3, 5, 6.    WATERMARK ---> 2020-12-16T00:10:00.02+00:00
+
+
+
+
+7.1 - CHANGE ADDRESS USER_1
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-5e97-9044-e3d0a2385888","userId":"9f872873-eae5-466e-8e04-5552564481d1","processedAt":"2020-12-16T13:00:00.00+00:00","address":"the address","residentCountryCode":"PO","postalCode":"29002","type":"ChangeAddressEvent"}
+
+
+
+7.2 - MONEY WITH NEW ADDRESS COUNTRY  (check *)
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385985","userId":"9f872873-eae5-466e-8e04-5552564481d1","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb211","processedAt":"2020-12-16T14:00:00.00+00:00","amount":200,"currency":"EUR","openingBalance":200,"closingBalance":300,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+
+
+
+*********************************************************************************************************************
+ ADVANCE TIME TO 2020-12-17T00:01:00.00+00:00 (after 2020-12-17T00:00:00.00+00:00) --- SESSION_1_USER_1  EXPIRED
+*********************************************************************************************************************
+
+USER STREAM
+
+"9f872873-eae5-466e-8e04-5552564481b9":{"id":"99afd170-babe-4e97-9044-e3d0a2385852","userId":"9f872873-eae5-466e-8e04-5552564481b9","processedAt":"2020-12-17T00:01:00.00+00:00","address":"the address","residentCountryCode":"XX","postalCode":"1111","type":"ChangeAddressEvent"}
+
+
+USER SESSION STREAM
+
+"9f872873-eae5-466e-8e04-5552564481b0":{"id":"326a14a3-2e2a-4719-9c71-b9a3952eb293","userId":"9f872873-eae5-466e-8e04-5552564481b0","processedAt":"2020-12-17T00:01:00.00+00:00","clientCountryCode":"XX","type":"UserSessionCreatedEvent"}
+
+
+WALLET STREAM
+
+"9f872873-eae5-466e-8e04-5552564481c3":{"id":"99afd170-babe-4e97-9044-e3d0a2385654","userId":"9f872873-eae5-466e-8e04-5552564481c3","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb288","processedAt":"2020-12-17T00:01:00.00+00:00","amount":100,"currency":"EUR","openingBalance":100,"closingBalance":200,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+********************************************************************************************************
+
+WATERMARK ---> 2020-12-17T00:01:00.00+00:00
+
+
+-------------> CHECK 7 (new address)
+
+
+8 - MONEY_4_USER_1 (late money event + session expired + async enrichment CHECK)
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385844","userId":"9f872873-eae5-466e-8e04-5552564481d1","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb211","processedAt":"2020-12-16T23:59:00.00+00:00","amount":200,"currency":"EUR","openingBalance":200,"closingBalance":300,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+-----------------
+
+9 - MONEY_1_USER_2 (session late + no user info check *)
+
+"9f872873-eae5-466e-8e04-5552564481d2":{"id":"99afd170-babe-4e97-9044-e3d0a2385841","userId":"9f872873-eae5-466e-8e04-5552564481d2","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb561","processedAt":"2020-12-17T00:11:00.00+00:00","amount":100,"currency":"EUR","openingBalance":100,"closingBalance":200,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+10 - SESSION USER 2 (session late)
+
+"9f872873-eae5-466e-8e04-5552564481d2":{"id":"326a14a3-2e2a-4719-9c71-b9a3952eb561","userId":"9f872873-eae5-466e-8e04-5552564481d2","processedAt":"2020-12-17T00:14:00.00+00:00","clientCountryCode":"FI","type":"UserSessionCreatedEvent"}
+
+
+11 - MONEY_OLD_USER_1 (old money check - enriched with async UY)
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385860","userId":"9f872873-eae5-466e-8e04-5552564481d1","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb255","processedAt":"2020-12-17T00:12:00.00+00:00","amount":100,"currency":"EUR","openingBalance":100,"closingBalance":200,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":true,"type":"PaymentEvent"}
+
+
+*********************************************************************************************************************
+ ADVANCE TIME TO 2020-12-17T00:16:00.00+00:00 (after 2020-12-17T00:15:00.00+00:00)
+*********************************************************************************************************************
+
+USER STREAM
+
+"9f872873-eae5-466e-8e04-5552564481b5":{"id":"99afd170-babe-4e97-9044-e3d0a2385853","userId":"9f872873-eae5-466e-8e04-5552564481b5","processedAt":"2020-12-17T00:16:00.00+00:00","address":"the address","residentCountryCode":"XX","postalCode":"1111","type":"ChangeAddressEvent"}
+
+
+USER SESSION STREAM
+
+"9f872873-eae5-466e-8e04-5552564481b1":{"id":"326a14a3-2e2a-4719-9c71-b9a3952eb294","userId":"9f872873-eae5-466e-8e04-5552564481b1","processedAt":"2020-12-17T00:16:00.00+00:00","clientCountryCode":"XX","type":"UserSessionCreatedEvent"}
+
+
+WALLET STREAM
+
+"9f872873-eae5-466e-8e04-5552564481c4":{"id":"99afd170-babe-4e97-9044-e3d0a2385655","userId":"9f872873-eae5-466e-8e04-5552564481c4","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb292","processedAt":"2020-12-17T00:16:00.00+00:00","amount":100,"currency":"EUR","openingBalance":100,"closingBalance":200,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":false,"type":"PaymentEvent"}
+
+
+********************************************************************************************************
+
+
+!!!------------------> CHECK  9, 10, 11
+
+
+------------------> WAIT 1 minute
+
+12 - AGAIN MONEY_OLD_USER_1 (dedup ttl CHECK)
+
+"9f872873-eae5-466e-8e04-5552564481d1":{"id":"99afd170-babe-4e97-9044-e3d0a2385860","userId":"9f872873-eae5-466e-8e04-5552564481d1","userSessionId": "326a14a3-2e2a-4719-9c71-b9a3952eb255","processedAt":"2020-12-17T00:12:00.00+00:00","amount":100,"currency":"EUR","openingBalance":100,"closingBalance":200,"moneyType":"AAA","paymentRelatedThing":"ipum epsum","isOldMoneyEvent":true,"type":"PaymentEvent"}
+
+

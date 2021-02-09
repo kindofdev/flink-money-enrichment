@@ -1,11 +1,12 @@
-# A streaming data enrichment application powered by Apache Flink. 
+# flink-money-enrichment-poc
+**A streaming data enrichment application powered by Apache Flink.**
 
 This project is an extensive POC of using Apache Flink (DataStream API) to implement a streaming
 data enrichment.
 
 ## Requirements
 
-###Non-functional
+######Non-functional
 
 - Scalability, low latency and high throughput. Provided by Flink out of the box. 
 - High availability and fault tolerance. Provided by Flink and RocksDB as state backend.
@@ -17,7 +18,7 @@ data enrichment.
 
 <br />
 
-###Functional
+######Functional
 
 - It should enrich a stream of transactions events (money) coming from a Kafka topic with data from two other Kafka topics (session event stream + user event stream) 
 - It should process events out of order.
@@ -31,7 +32,7 @@ data enrichment.
 
 <br />
 
-####BTW, Apache Flink:
+######BTW, Apache Flink:
 
 - It's Battle tested. (https://flink.apache.org/poweredby.html)
 - It's good supported. Flink's community is huge and very active. Moreover, Ververica offers great courses and production supporting.
@@ -40,13 +41,14 @@ data enrichment.
 
 ## Usage
 
-### To run the tests:
+**To run the tests**
 ```
 cd .../money-enrichment/
 sbt test
 ```
 
-###To run and test the application locally, 
+**To run and test the application locally**
+
 We have 3 options:
 
 - SBT. Run `sbt run` from the application root folder.
@@ -62,7 +64,8 @@ cd .../money-enrichment/docker
 docker-compose up
 ```
 
-###To query internal state 
+**To query internal state**
+
 We can use `org.kindofdev.query.QueryClient`. There's a Scala worksheet with an example called `query_state_worksheet.sc`
 
 ## To-do list
@@ -90,4 +93,3 @@ https://medium.com/bird-engineering/replayable-process-functions-in-flink-time-o
 
 <!-- Example #2 - inline-styled ❤ -->
 Made with <span style="color: #e25555;">&#9829;</span> in Malaga by Jose Velasco# flink-money-enrichment
-# flink-money-enrichment
