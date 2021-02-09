@@ -14,7 +14,6 @@ ThisBuild / scalaVersion := "2.12.8"
 
 val flinkVersion = "1.12.1"
 
-addSbtPlugin("com.julianpeeters" % "sbt-avrohugger" % "2.0.0-RC22")
 addSbtPlugin("com.artima.supersafe" % "sbtplugin" % "1.1.10")
 
 val flinkDependencies = Seq(
