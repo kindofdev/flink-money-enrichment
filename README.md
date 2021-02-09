@@ -14,7 +14,7 @@ data enrichment.
 - High availability and fault tolerance. Provided by Flink and RocksDB as state backend.
 - Exactly once end-to-end processing. Achieved by using Flink Kafka Source/Sink connectors.
 - Application evolution without reprocessing all data from the beginning. Achieved by using AVRO as data type for Flink state.
-- Easy to test. Provided so-called Flink harnesses and MiniCluster .
+- Easy to test. Provided by so-called Flink harnesses and MiniCluster .
 - Observability of Flink internal state. Achieved by using Flink QueryableStateClient. 
 - Bootstrapping state based on historical data. Provided by Flink State Processor API.
 
@@ -34,9 +34,9 @@ data enrichment.
 
 #### BTW, Apache Flink:
 
-- It's Battle tested. (https://flink.apache.org/poweredby.html)
-- It's good supported. Flink's community is huge and very active. Moreover, Ververica offers great courses and production supporting.
-- It offers a Scala API.
+- is Battle tested. (https://flink.apache.org/poweredby.html)
+- has good supported. Flink's community is huge and very active. Moreover, Ververica offers great courses and production supporting.
+- offers a Scala API.
 
 <br />
 
@@ -83,7 +83,7 @@ We can use `org.kindofdev.query.QueryClient`. There's a Scala worksheet with an 
 
 ## Inspirations
 
-- The approach followed to achieve application evolution using Scala case classes and AVRO is based on ING WBAA team approach shown in the following article.
+- The approach followed to achieve application evolution using Scala case classes and AVRO is based on ING WBAA team's approach shown in the following article.
   https://medium.com/wbaa/making-sense-of-apache-flink-state-migration-with-scala-and-avro-69091c232646
   
 - Determinism in backfill scenarios vs real time is based on Bird Engineering's article
@@ -98,4 +98,4 @@ https://medium.com/bird-engineering/replayable-process-functions-in-flink-time-o
  <br />
  
 <!-- Example #2 - inline-styled ❤ -->
-Made with <span style="color: #e25555;">&#9829;</span> in Malaga by Jose Velasco# flink-money-enrichment
+Made with <span style="color: #e25555;">&#9829;</span> in Malaga by Jose Velasco
