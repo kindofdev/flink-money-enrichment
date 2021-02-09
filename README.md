@@ -16,7 +16,6 @@ data enrichment.
 - Observability of Flink internal state. Achieved by using Flink QueryableStateClient. 
 - Bootstrapping state based on historical data. Provided by Flink State Processor API.
 
-<br />
 
 #### Functional
 
@@ -30,7 +29,6 @@ data enrichment.
 - It should enrich late money events with data from an external service without blocking. (Flink AsyncFunction)
 - It should use Avro as a serialization system and Scala case classes representing the domain. (No Java generated POJOS) (See Inspirations section)
 
-<br />
 
 #### BTW, Apache Flink:
 
@@ -38,7 +36,7 @@ data enrichment.
 - It's good supported. Flink's community is huge and very active. Moreover, Ververica offers great courses and production supporting.
 - It offers a Scala API.
 
-
+<br />
 ## Usage
 
 **To run the tests**
@@ -68,6 +66,7 @@ docker-compose up
 
 We can use `org.kindofdev.query.QueryClient`. There's a Scala worksheet with an example called `query_state_worksheet.sc`
 
+<br />
 ## To-do list
 
 - Create performance tests + Tune parallelism and maxParallelism.
@@ -76,8 +75,7 @@ We can use `org.kindofdev.query.QueryClient`. There's a Scala worksheet with an 
 - Find out why the test "not deduplicate events if ttl finished" fails. (It works correctly when it is tested manually) (this test is ignored currently).
 - Find out why the test "fail due to a timeout in async session enrichment" fails. (this test is ignored currently).
 
-
-
+<br />
 ## Inspirations
 
 - The approach followed to achieve application evolution using Scala case classes and AVRO is based on ING WBAA team approach shown in the following article.
@@ -86,10 +84,10 @@ We can use `org.kindofdev.query.QueryClient`. There's a Scala worksheet with an 
 - Determinism in backfill scenarios vs real time is based on Bird Engineering's article
 https://medium.com/bird-engineering/replayable-process-functions-in-flink-time-ordering-and-timers-28007a0210e1
 
+<br />
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)  
 
  <br />
-
 <!-- Example #2 - inline-styled ❤ -->
 Made with <span style="color: #e25555;">&#9829;</span> in Malaga by Jose Velasco# flink-money-enrichment
