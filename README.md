@@ -35,7 +35,7 @@ data enrichment.
 #### BTW, Apache Flink:
 
 - is battle tested. (https://flink.apache.org/poweredby.html)
-- has good supported. Flink's community is huge and very active. Moreover, Ververica offers great courses and production supporting.
+- is good supported. Flink's community is huge and very active. Moreover, Ververica offers great courses and production supporting.
 - offers a Scala API.
 
 <br />
